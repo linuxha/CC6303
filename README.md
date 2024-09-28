@@ -41,6 +41,12 @@ git remote set-head origin -a
 
 git remote prune origin
 
+$ git push
+fatal: The current branch dev has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin dev
+
 ```
 
 [How to create dev branch from master on Github](https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github)
