@@ -31,6 +31,7 @@ issues. Not sure why the compiler doesn't work. I can't event get the
 compiler to save to a .s (asm file). So it appears this needs some
 additional work. At the moment I'm hacking at it.
 
+## Git stuff
 ```
 
 git branch -m master main
@@ -41,6 +42,8 @@ git remote set-head origin -a
 git remote prune origin
 
 ```
+
+[How to create dev branch from master on Github](https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github)
 
 ### Old Status
 The basic structure is now reasonably functional. You can "make" and "make
