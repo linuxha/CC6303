@@ -1,4 +1,5 @@
 # CC6303
+
 A C compiler for the 6800/6803/6303 processors
 
 This is based upon cc65 [https://github.com/cc65/cc65] but involves doing
@@ -10,8 +11,38 @@ which is parsed as it goes into all sorts of asm level info which drives
 optimizer logic. It also uses it to allow the compiler to re-order blocks
 and generate code then change its mind.
 
+# Notes: 20240928
+
+I've cloned [EtchedPixel's CC6303](https://github.com/EtchedPixels/CC6303)
+compiler and I'm attempting to use it under Linux to compile for Flex
+3.0 and the 6800. Later I'll look to use it with the 6803 boards I
+have. At the moment it seems to have quite a few issues. No command
+line help, two cc68 commands (one goes in bin, one in lib/). If I ask
+it to stop at the assembly code I get an empty file. So not sure
+what's going on here. Which is why I've cloned it. Let see what I can
+do.
+
 ## Status
 
+### Current 20240928
+
+I've attempted to use this under Linux and I've run into all sorts of
+issues. Not sure why the compiler doesn't work. I can't event get the
+compiler to save to a .s (asm file). So it appears this needs some
+additional work. At the moment I'm hacking at it.
+
+```
+
+git branch -m master main
+git fetch origin
+git branch -u origin/main main
+git remote set-head origin -a
+
+git remote prune origin
+
+```
+
+### Old Status
 The basic structure is now reasonably functional. You can "make" and "make
 install" to get a complete compiler/assembler/linker/tools that appear
 to generate actual binaries.
