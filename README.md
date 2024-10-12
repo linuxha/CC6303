@@ -81,6 +81,33 @@ cc68 -m6803 -c foo.c
 ld68 -b -C startaddress crt.o mycode.o /opt/cc68/lib/lib6803.a
 ````
 
+```
+```
+
+```
+./cc68 -m6800 -V -X cls.c
+
+/opt/cc68/lib/cc68 -I /opt/cc68/include/ -r --add-source --cpu 6800 -D__6800__ cls.c
+/opt/cc68/lib/copt /opt/cc68/lib/cc68-00.rules
+/opt/cc68/bin/as68 cls.s
+/opt/cc68/bin/ld68 -b -C 256 -o a.out /opt/cc68/lib/crt0.o cls.o /opt/cc68/lib/libc.a /opt/cc68/lib/lib6800.a
+```
+## Flex
+
+```
+./cc68 -tflex -V -X cls.c
+```
+
+```
+$ ./cc68 -tflex -V -X cls.c
+
+/opt/cc68/lib/cc68 -I /opt/cc68/include/flex/ -I /opt/cc68/include/ -r --add-source --cpu 6800 -D__6800__ -D__FLEX__ cls.c
+/opt/cc68/lib/copt /opt/cc68/lib/cc68-00.rules
+/opt/cc68/bin/as68 cls.s
+/opt/cc68/bin/ld68 -b -C 256 -Z 40 -o a.out /opt/cc68/lib/crt0.o cls.o /opt/cc68/lib/libc.a /opt/cc68/lib/libflex.a /opt/cc68/lib/lib6800.a
+/opt/cc68/lib/flex-binify -s 256 -l 585 -x 256 a.out a.out.cmd
+```
+
 ## Tandy MC-10 target
 
 ````
@@ -140,3 +167,118 @@ putchar/puts.
   however need someone to volunteer to write the basic IEEE floating point
   operations (add, negate, multiply, divide, maybe compare, plus conversion
   to and from float) for a 680x processor.
+
+# Targets
+
+** MC10
+
+# 6800 Flex
+
+| ADDRESS     | DESCRIPTION | |
+| 0000 - 7FFF | User RAM (Some of the lower end of this area is used | |
+|             | by certain utilities such as NEWDISK.) | |
+| 8000 - 8001 | ACIA (6850) - Slot 0 SWTPC 6800 | Console
+| 8004 - 8005 | ACIA (6850) - Slot 1 SWTPC 6800 | | 
+| 8008 - 800F | IDE Port 1 - Slot 2 - SS30-IDE SWTPC 6800 | |
+| 8010 - 8013 | RTC (146818) - Slot 4 SWTPC 6800 | |
+| 8014        | FDC Select - Slot 5 SWTPC 6800| |
+| 8018 - 801B | 2797 - Slot 6 SWTPC 6080 | |
+| 801C - 801F | PIA (6821) - Slot 7 SWTPC 6800 | |
+| 8028 - 802F | IDE Port 2 | |
+| 8040 - 9FFF | RAM | |
+| A000 - A07F | Stack Area (SP is initialized to A07F) | |
+| A080 - A0FF | Input Buffer | |
+| A100 - A6FF | Utility Command Area | |
+| A700 - A83F | Scheduler & Printer Spooler | |
+| A840 - A97F | System FCB | |
+| A980 - ABFF | System Files Area | |
+| AC00 - B3FF | DOS | |
+| B400 - BE7F | FMS | |
+| BE80 - BFFF | Disk Drivers | |
+| C000 - DFFF | RAM | |
+| E000 - EFFF | EPROM | |
+| F000 - FFF7 | RAM | |
+| FFF8 - FFFF | 8 locations at top of EPROM mapped for reset/IRQ vectors | |
+| | |
+
+* asmb
+
+```
+The general syntax of the ASMB command is:
+ASMB,<file spec 12[,<file spec 2],+<option 1ist
+
+
+Some examples of assembler command lines follow:
+ASMB, TEST
+ASMB,TEST, +LS
+ASMB,O.TEST,1.TEST.CM,+S
+ASM,TEST, +8N
+The first example would assemble the source file TEST.TXT from the
+working drive and create a binary file named TEST.BIN on the same drive.
+The second example would do the same operation as the first example, but
+this time the Listing and the Symbol table output would be suppressed.
+The next example would assemble the file named TEST. TXT on drive 0 and
+produce a binary file on drive 1 named TEST.CMD. Because of the Sin
+the options field, no symbol table would be output. The last example
+will assemble the file named TEST. TXT, producing a listing with line
+numbers, and not produce a binary file {because of the B).
+```
+
+```
+asmb,0.hw,0.hw.cmd
+
+
+                *
+                        OPT    PAG
+                        TTL    Hello World
+
+
+
+Hello World                          9-28-24  TSC ASSEMBLER  PAGE    1
+
+
+                
+ AD1E           PSTRNG  EQU    $AD1E
+ AD0F           OUTCH   equ    $AD0F
+ AD09           INCH    equ    $AD09
+ AD03           WARMST  equ    $AD03
+                
+ A100                   org    $A100
+                
+ A100 20 01             bra    start
+ A102 01        VN      fcb    1         ;* Command version number
+ A103 8E 02 00  start   lds    #$0200
+                
+ A106 CE A1 0F          ldx    #HWMSG
+ A109 BD AD 1E          jsr    PSTRNG
+                
+ A10C 7E AD 03          jmp    WARMST    ;* Done
+                
+ A10F 1B        HWMSG   fcb    $1B
+ A110 3A                fcb    $3A
+ A111 48                fcc    'Hello world'
+ A112 65 6C     
+ A114 6C 6F     
+ A116 20 77     
+ A118 6F 72     
+ A11A 6C 64     
+ A11C 04                fcb    $04
+                
+                        end    
+       
+NO ERROR(S) DETECTED
+
+
+
+Hello World                          9-28-24  TSC ASSEMBLER  PAGE    2
+
+
+
+   SYMBOL TABLE:
+
+HWMSG  A10F   INCH   AD09   OUTCH  AD0F   PSTRNG AD1E   VN     A102   
+WARMST AD03   start  A103   
+
+
++++
+```
