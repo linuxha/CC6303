@@ -3,8 +3,9 @@ OBJ = flexcon.o fms.o
 OBJ += errno.o fclose.o fgetc.o fopen.o fputc.o fputs.o
 OBJ += rewind.o unlink.o
 OBJ += opendir.o readdir.o
+OBJ += flexcon.o exit.o
 
-all: libflex.a crt0.o
+all: libflex.a crt0.o crt0_flex.o
 
 libflex.a: $(OBJ)
 	ar rc libflex.a $(OBJ)

@@ -27,8 +27,8 @@ l1:
 		staa @tmp
 		stab @tmp+1
 	
-		ldaa AC2B
-		ldab AC2C
+		ldaa $AC2B      ;* Was AC2B
+		ldab $AC2C      ;* Was AC2C
 		subb @tmp+1
 		sbca @tmp
 		bcs nofit
@@ -56,8 +56,8 @@ wiped:
 		staa @one+1
 
 		; Memory layout
-		ldaa AC2B
-		ldab AC2C
+		ldaa $AC2B      ;* Was AC2B
+		ldab $AC2C      ;* Was AC2C
 		subb #$80		; 128 byte line copy
 		sbca #$00
 		staa @tmp
@@ -168,11 +168,14 @@ done:
 		psha
 		jsr _main
 		; if this returns it's an exit()
-		pshb
-		psha
-		jsr _exit
+		;pshb
+		;psha
+		;jsr _exit
 		; Never returns
 
+;_exit:
+;__exit:
+		jmp $AD03
 
 		.data
 

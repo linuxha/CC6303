@@ -22,6 +22,7 @@
 		.export _flex_outadr
 		.export _flex_indec
 		.export _flex_stat
+                .export _flex_fini
 
 		.code
 
@@ -164,3 +165,6 @@ _flex_stat:
 		beq nothit
 		incb
 nothit:		rts
+
+_flex_fini:
+        	jmp     $AD03

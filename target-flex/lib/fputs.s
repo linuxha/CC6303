@@ -47,7 +47,7 @@ done:		ldab #1
 		rts
 ;
 ; For puts as we don't support freopen we know stdout is console. Now it may
-; be that FLEX has a redirected console but it sorts that bit out		
+; be that FLEX has a redirected console but it sorts that bit out
 _puts:
 		tsx
 putsl:

@@ -4,7 +4,7 @@
 		.export _exit
 		.export __exit
 		.code
-_exit;
+_exit:
 __exit:
 		jmp $AD03
 

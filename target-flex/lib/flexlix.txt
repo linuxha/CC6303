@@ -1,0 +1,114 @@
+;*
+;*   FLEX SYSTEM DEFINED ENTRY POINTS AND EQUATES
+;*
+;*   FLEX       PUBLIC
+;*
+LINBUF     EQU     $A080               ;* LINE BUFFER
+CMDADR     EQU     $A100               ;* UTILITY COMMAND SPACE (1.5 K)
+CMDEND     EQU     $A700               ;* UTILITY COMMAND SPACE END
+SYSFCB     EQU     $A840               ;* SYSTEM FCB ADDRESS
+;*
+;*   GLOBAL VALUES SPECIFIED BY TTYSET AND ASN
+;*
+BSPCHR     EQU     $AC00               ;* BACKSPACE CHARACTER
+DELCHR     EQU     $AC01               ;* DELETE CHARACTER
+EOLCHR     EQU     $AC02               ;* END OF LINE CHARACTER
+DEPTH      EQU     $AC03               ;* DEPTH COUNT
+WIDTH      EQU     $AC04               ;* WIDTH COUNT
+NULLS      EQU     $AC05               ;* NULL COUNT
+TABCHR     EQU     $AC06               ;* TAB CHARACTER
+BSECHR     EQU     $AC07               ;* BACKSPACE ECHO CHARACTER
+PAUSE      EQU     $AC09               ;* PAUSE CONTROL BYTE
+ESCCHR     EQU     $AC0A               ;* ESCAPE CHARACTER
+SDRN       EQU     $AC0B               ;* SYSTEM DRIVE NUMBER
+WDRN       EQU     $AC0C               ;* WORKING DRIVE NUMBER
+;*
+;*   FLEX SYSTEM GLOBAL VARIABLES
+;*
+SYSFLG     EQU     $AC0D               ;* USE SYSTEM DRIVE FLAG
+SYSDATE    EQU     $AC0E               ;* DATE REGISTERS
+LSTTRM     EQU     $AC11               ;* LAST TERMINATOR CHARACTER
+CBUFPT     EQU     $AC14               ;* LINE BUFFER POINTER
+ESCRET     EQU     $AC16               ;* ESCAPE RETURN REGISTER
+CURCHR     EQU     $AC18               ;* CURRENT NXTCH CHARACTER
+PREVCH     EQU     $AC19               ;* PREVIOUS NXTCH CHARACTER
+CURLCT     EQU     $AC1A               ;* CURRENT LINE COUNT
+LOADAO     EQU     $AC1B               ;* LOADER ADDRESS OFFSET DATA
+XFRFLG     EQU     $AC1D               ;* TRANSFER ADDRESS FLAG
+XFRADR     EQU     $AC1E               ;* TRANSFER ADDRESS OF LOADED FILE
+OUTSWT     EQU     $AC22               ;* OUTPUT SWITCH
+INSWT      EQU     $AC23               ;* INPUT SWITCH
+DOCMDF     EQU     $AC28               ;* DOCMD ENTRY FLAG
+CURCOL     EQU     $AC29               ;* CURRENT OUTPUT COLUMN
+MEMEND     EQU     $AC2B               ;* END OF MEMORY ADDRESS
+FMSBUSY    EQU     $AC30               ;* FLEX ALREADY BUSY FLAG
+CPUTYPE    EQU     $AC33               ;* CPU TYPE FLAG
+RETADR     EQU     $AC43               ;* DOCMD RETURN ADDRESS
+ULCFLAG    EQU     $AC49               ;* UPPER/LOWER CASE MAP FLAG
+PROMPT     EQU     $AC4E               ;* POINTER TO PROMPT STRING
+;*
+;*   FLEX SYSTEM DEFINED ENTRY VECTORS
+;*
+COLDS      EQU     $AD00               ;* FLEX COLD START ADDRESS
+WARMS      EQU     $AD03               ;* FLEX WARM START ADDRESS
+RENTER     EQU     $AD06               ;* RE-ENTER FLEX PROCESSING
+INCH       EQU     $AD09               ;* INPUT CHARACTER (LOW LEVEL)
+OUTCH      EQU     $AD0F               ;* OUTPUT CHARACTER (LOW LEVEL)
+GETCHR     EQU     $AD15               ;* INPUT CHARACTER ROUTINE
+PUTCHR     EQU     $AD18               ;* OUTPUT CHARACTER ROUTINE
+INBUFF     EQU     $AD1B               ;* INPUT LINE BUFFER
+PSTRNG     EQU     $AD1E               ;* PRINT STRING
+CLASS      EQU     $AD21               ;* CLASSIFY CHARACTER
+PCRLF      EQU     $AD24               ;* PRINT CR/LF SEQUENCE
+NXTCH      EQU     $AD27               ;* GET NEXT CHARACTER FROM INPUT BUFFER
+GETFIL     EQU     $AD2D               ;* SCAN FILE SPEC ADDRESS
+LOAD       EQU     $AD30               ;* LOAD FILE ENTRY POINT
+SETEXT     EQU     $AD33               ;* SET UP FILE EXTENSION
+OUTDEC     EQU     $AD39               ;* OUTPUT DECIMAL NUMBER
+OUTHEX     EQU     $AD3C               ;* OUTPUT HEXADECIMAL NUMBER
+RPTERR     EQU     $AD3F               ;* I/O ERROR ABORT ROUTINE
+GETHEX     EQU     $AD42               ;* GET HEXIDECIMAL SPECIFICATION
+OUTADR     EQU     $AD45               ;* OUTPUT HEXADECIMAL ADDRESS
+INDEC      EQU     $AD48               ;* GET DECIMAL NUMBER
+DOCMD      EQU     $AD4B               ;* DOCMD ENTRY ADDRESS
+STATUS     EQU     $AD4E               ;* CHECK TERMINAL INPUT STATUS
+;*
+;*   LOW LEVEL TERMINAL AND INTERRUPT CONTROL ADDRESSES
+;*
+INTAP      EQU     $B3DE               ;* VECTOR FOR INPUT TAP ROUTINE
+DUMMY      EQU     $B3E0               ;* DUMMY RTS INSTRUCTION USED BY RM
+SETIRQ     EQU     $B3E1               ;* SET IRQ PROCESS VECTOR
+CLRIRQ     EQU     $B3E3               ;* CLEAR IRQ PROCESS VECTOR
+TINCH      EQU     $B3E5               ;* LOW-LEVEL TERM INPUT WITHOUT ECHO
+TOFF       EQU     $B3ED               ;* TIMER OFF ROUTINE ADDRESS
+TON        EQU     $B3EF               ;* TIMER ON ROUTINE ADDRESS
+TMINIT     EQU     $B3F1               ;* TIMER INITIALIZE ROUTINE ADDRESS
+TINIT      EQU     $B3F5               ;* LOW-LEVEL TERMINAL INITIALIZE
+TCHECK     EQU     $B3F7               ;* LOW-LEVEL TERMINAL CHECK ADDRESS
+TOUTCH     EQU     $B3F9               ;* LOW-LEVEL TERMINAL OUTPUT ADDRESS
+TINCHE     EQU     $B3FB               ;* LOW-LEVEL TERMINAL INPUT WITH ECHO
+;*
+;*   FILE MANAGEMENT SYSTEM ENTRY POINTS
+;*
+FMSCLS     EQU     $B403               ;* CLOSE UP ALL FILES ENTRY
+FMS        EQU     $B406               ;* FILE MANAGER EXEC CALL
+FCBASE     EQU     $B409               ;* FILE CONTROL BLOCK BASE
+VERIFY     EQU     $B435               ;* FMS VERIFY FLAG
+SURTAB     EQU     $B436               ;* FMS SURNAME TABLE
+
+FCBLEN     EQU     256+64              ;* FILE CONTROL BLOCK LENGTH
+;*
+;*   DISK DRIVER ENTRY POINTS
+;*
+DREAD      EQU     $BE00               ;* READ SECTOR ROUTINE
+DWRITE     EQU     $BE03               ;* WRITE SECTOR ROUTINE
+DVERFY     EQU     $BE06               ;* VERIFY ROUTINE
+DREST      EQU     $BE09               ;* DRIVE RESTORE ROUTINE
+DRIVE      EQU     $BE0C               ;* DRIVE SELECT ROUTINE
+DCHECK     EQU     $BE0F               ;* CHECK DRIVE READY
+DQUICK     EQU     $BE12               ;* QUICK CHECK DRIVE READY
+DSEEK      EQU     $BE1B               ;* DRIVE SEEK-TO-SECTOR ROUTINE
+
+;/* Local Variables: */
+;/* mode: asm        */
+;/* End:             */
