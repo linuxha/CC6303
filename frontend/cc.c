@@ -54,14 +54,20 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
+// BINPATH="/opt/cc68/bin/"
+// LIBPATH="/opt/cc68/lib/"
+// INCPATH="/opt/cc68/include/"
 #define CMD_AS		BINPATH"as68"
 #define CMD_CC		LIBPATH"cc68"
 #define CMD_COPT 	LIBPATH"copt"
 #define COPT_FILE 	LIBPATH"cc68.rules"
 #define COPT00_FILE 	LIBPATH"cc68-00.rules"
 #define CMD_LD		BINPATH"ld68"
+
 #define CRT0		LIBPATH"crt0.o"
 #define CRT0_MC10	LIBPATH"crt0_mc10.o"
+#define CRT0_FLEX	LIBPATH"crt0_flex.o"
+
 #define LIBC		LIBPATH"libc.a"
 #define LIB6800		LIBPATH"lib6800.a"
 #define LIB6803		LIBPATH"lib6803.a"
@@ -110,11 +116,12 @@ int standalone;
 int cpu = 6303;
 int mapfile;
 int targetos;
+int fuzixsub;
+
 #define OS_NONE		0
 #define OS_FUZIX	1
 #define OS_MC10		2
 #define OS_FLEX		3
-int fuzixsub;
 
 #define MAXARG	512
 
@@ -123,6 +130,11 @@ char *arglist[MAXARG];
 char **argptr;
 char *rmlist[MAXARG];
 char **rmptr = rmlist;
+
+#define TRUE	1
+#define FALSE	0
+
+int verbose = FALSE;
 
 static void remove_temporaries(void)
 {
@@ -279,16 +291,17 @@ static void run_command(void)
 		perror("fork");
 		fatal();
 	}
+
 	if (pid == 0) {
-#ifdef DEBUG
-		{
-			char **p = arglist;
-			printf("[");
-			while(*p)
-				printf("%s ", *p++);
-			printf("]\n");
-		}
-#endif
+
+            if(verbose) {
+                char **p = arglist;
+                printf(";* A [");
+                while(*p)
+                    printf("%s ", *p++);
+                printf("]\n");
+            }
+
 		fflush(stdout);
 		if (arginfd != -1) {
 			dup2(arginfd, 0);
@@ -312,6 +325,15 @@ static void run_command(void)
 			fatal();
 		}
 	}
+
+        if(verbose) {
+            char **p = arglist;
+            printf(";* B [");
+            while(*p)
+                printf("%s ", *p++);
+            printf("]\n");
+        }
+
 	if (WIFSIGNALED(status) || WEXITSTATUS(status)) {
 		printf("cc: %s failed.\n", arglist[0]);
 		fatal();
@@ -491,7 +513,9 @@ void link_phase(void)
 	}
 	if (!standalone) {
 		/* Start with crt0.o, end with libc.a and support libraries */
-		if (targetos == OS_MC10)
+		if (targetos == OS_FLEX)
+			add_argument(CRT0_FLEX);
+		else if (targetos == OS_MC10)
 			add_argument(CRT0_MC10);
 		else	/* For now - we will want one per target */
 			add_argument(CRT0);
@@ -544,7 +568,8 @@ void link_phase(void)
 void sequence(struct obj *i)
 {
 //	printf("Last Phase %d\n", last_phase);
-//	printf("1:Processing %s %d\n", i->name, i->type);
+	fprintf(stderr, ";* 1:Processing %s %d\n", i->name, i->type);
+
 	if (i->type == TYPE_S) {
 		convert_S_to_s(i->name);
 		i->type = TYPE_s;
@@ -576,16 +601,20 @@ void sequence(struct obj *i)
 void processing_loop(void)
 {
 	struct obj *i = objlist.head;
+
 	while (i) {
 		sequence(i);
 		remove_temporaries();
 		i = i->next;
 	}
+
 	if (last_phase < 4)
 		return;
+
 	link_phase();
 	/* And clean up anything we couldn't wipe earlier */
 	last_phase = 255;
+
 	remove_temporaries();
 }
 
@@ -602,7 +631,24 @@ void unused_files(void)
 
 void usage(void)
 {
-	fprintf(stderr, "usage...\n");
+	fprintf(stderr, "cc68 Front end usage...\n");
+        fprintf(stderr, "c:S:E:l:I:L:D:i:o:sX:m:Mt:V\n");
+        fprintf(stderr, "  -c filename                   Compile and assemble but don't link\n");
+        fprintf(stderr, "  -S filename                   Compile but don't assemble and link\n");
+        fprintf(stderr, "  -E                            Stop after the preprocessing stage\n");
+        fprintf(stderr, "  -l library                    add a library\n");
+        fprintf(stderr, "  -I includes                   add include\n");
+        fprintf(stderr, "  -L libpath                    add a library pth\n");
+        fprintf(stderr, "  -D define                     add a define\n");
+        fprintf(stderr, "  -i include?                   add include\n");
+        fprintf(stderr, "  -o filename                   compile but don't link\n");
+        fprintf(stderr, "  -s                            standalone \n");
+        fprintf(stderr, "  -X                            Keep temp files\n");
+        fprintf(stderr, "  -m CPU                        compile for CPU (6800, 6803, 6303)\n");
+        fprintf(stderr, "  -M                            mapfile \n");
+        fprintf(stderr, "  -t target                     target (flex, mc10, fuzix, fuzixrel1, fuzixrel2)\n");
+        fprintf(stderr, "  -V                            Verbose\n");
+        fprintf(stderr, "\nThe cc68 compiler is found in %s\n", CMD_CC);
 	fatal();
 }
 
@@ -690,8 +736,9 @@ void one_input(void)
 
 void uniopt(char *p)
 {
-	if (p[2])
-		usage();
+    if (p[2]) {
+        usage();
+    }
 }
 
 static char *passopts[] = {
@@ -700,7 +747,7 @@ static char *passopts[] = {
 	"*code-name",
 	"*data-name",
 	" debug",
-	" inline-stdfuncs",
+	" inlinestdfuncs",
 	"*register-space",
 	" register-vars",
 	"*rodata-name",
@@ -833,6 +880,9 @@ int main(int argc, char *argv[])
 				fprintf(stderr, "cc: only flex, fuzix and mc10 target types are known.\n");
 				fatal();
 			}
+			break;
+                case 'V':
+                    	verbose = TRUE;
 			break;
 		default:
 			usage();
