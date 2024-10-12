@@ -11,7 +11,32 @@ which is parsed as it goes into all sorts of asm level info which drives
 optimizer logic. It also uses it to allow the compiler to re-order blocks
 and generate code then change its mind.
 
-# Notes: 20240928
+# Notes
+
+## Notes: 20241012
+
+I've modified things a bit to allow me to compile a 6800 Flex C program and allow it to run under Flex. I have found a few problems like a double des after a jsr to main. I found it necessary to add a jump to WARMST (flex_fini()) at the end of my main() {}. Once I get the sample program cleaned up I'll provide a sample that should compile on Linux and run on Flex (6800).
+
+```
+$ cc68 -V -m6800 -tflex -X hwc.c -o hwc
+;* 1:Processing hwc.c 4
+;* A [/opt/cc68/lib/cc68 -I /opt/cc68/include/flex/ -I /opt/cc68/include/ -r --add-source --cpu 6800 -D__6800__ -D__FLEX__ hwc.c ]
+hwc.c(24): Warning: 'i' is defined but never used
+;* B [/opt/cc68/lib/cc68 -I /opt/cc68/include/flex/ -I /opt/cc68/include/ -r --add-source --cpu 6800 -D__6800__ -D__FLEX__ hwc.c ]
+;* A [/opt/cc68/lib/copt /opt/cc68/lib/cc68-00.rules ]
+;* B [/opt/cc68/lib/copt /opt/cc68/lib/cc68-00.rules ]
+;* A [/opt/cc68/bin/as68 hwc.s ]
+;* B [/opt/cc68/bin/as68 hwc.s ]
+;* A [/opt/cc68/bin/ld68 -b -C 256 -Z 40 -o hwc /opt/cc68/lib/crt0_flex.o hwc.o /opt/cc68/lib/libc.a /opt/cc68/lib/libflex.a /opt/
+cc68/lib/lib6800.a ]
+;* B [/opt/cc68/bin/ld68 -b -C 256 -Z 40 -o hwc /opt/cc68/lib/crt0_flex.o hwc.o /opt/cc68/lib/libc.a /opt/cc68/lib/libflex.a /opt/
+cc68/lib/lib6800.a ]
+;* A [/opt/cc68/lib/flex-binify -s 256 -l 408 -x 256 hwc hwc.cmd ]
+;* B [/opt/cc68/lib/flex-binify -s 256 -l 408 -x 256 hwc hwc.cmd ]
+```
+Yes there this is overly verbose but it's a step to getting this working. I don't guarantee the compiler is fully work. At the moment I wouldn't consider this stable.
+
+## Notes: 20240928
 
 I've cloned [EtchedPixel's CC6303](https://github.com/EtchedPixels/CC6303)
 compiler and I'm attempting to use it under Linux to compile for Flex
