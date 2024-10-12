@@ -72,19 +72,26 @@ int main(int argc, char *argv[]) {
     }
     while(len >= 255) {
         fputc(0x02, out);		/* Block marker */
+
         fputc(start >> 8, out);		/* 255 byte block at working address */
         fputc(start, out);
+
         fputc(255, out);
+
         for(i = 0; i < 255; i++)
             fputc(fgetc(in), out);
         len -= 255;
         start += 255;
     }
+
     if (len) {
         fputc(0x02, out);
+
         fputc(start >> 8, out);
         fputc(start, out);
+
         fputc(len, out);
+
         while(len--)
             fputc(fgetc(in), out);
     }
@@ -93,16 +100,19 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "binify: source too short.\n");
         exit(1);
     }
+
     fclose(in);
 
     if (setexec) {
-        fputc(0x16, out);
+        fputc(0x16, out);       /* What is this? */
         fputc(exec >> 8, out);
         fputc(exec, out);
     }
+
     if (fclose(out) == -1) {
         perror(argv[optind+1]);
         return 1;
     }
+
     return 0;
 }
