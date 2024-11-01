@@ -19,7 +19,7 @@
  *		We write the entire object out as one .o file with all the
  *		internal references resolved and all the symbols adjusted
  *		versus that. Undefined symbols are allowed and carried over
- *	a.out (or similar format)
+ *	        a.out (or similar format)
  *		We resolve the entire object as above but write out with a
  *		binary header. No undefined symbols are allowed
  *	bin:
@@ -1309,6 +1309,86 @@ static void add_object(const char *name, off_t off, int lib)
 }
 
 /*
+*/
+void
+usage() {
+    fprintf(stderr, "Vh?rbvtsiu:o:m:f:R:A:B:C:D:S:X:Z:8:\n");
+    /*
+		case 'r':
+			ldmode = LD_RFLAG;
+			break;
+		case 'b':
+			ldmode = LD_ABSOLUTE;
+			strip = 1;
+			break;
+		case 'v':
+			printf("FuzixLD 0.2.1\n");
+			break;
+		case 't':
+			verbose = 1;
+			break;
+		case 'o':
+			outname = optarg;
+			break;
+		case 'm':
+			mapname = optarg;
+			break;
+		case 'u':
+			insert_internal_symbol(optarg, -1, 0);
+			break;
+		case 's':
+			strip = 1;
+			break;
+		case 'i':
+			split_id = 1;
+			break;
+		case 'f':
+			segmentorder = optarg;
+			break;
+		case 'R':
+			relocf = xfopen(optarg, "w");
+			break;
+		case 'A':
+			align = xstrtoul(optarg);
+			if (align == 0)
+				align = 1;
+			break;
+		case 'B':	// BSS
+			base[3] = xstrtoul(optarg);
+			baseset[3] = 1;
+			break;
+		case 'C':	// CODE
+			base[1] = xstrtoul(optarg);
+			baseset[1] = 1;
+			break;
+		case 'D':	// DATA
+			base[2] = xstrtoul(optarg);
+			baseset[2] = 1;
+			break;
+		case 'L':	// LITERAL
+			base[7] = xstrtoul(optarg);
+			baseset[7] = 1;
+			break;
+		case 'S':	// Shared/Common
+			base[6] = xstrtoul(optarg);
+			baseset[6] = 1;
+			break;
+		case 'X':	// DISCARD
+			base[5] = xstrtoul(optarg);
+			baseset[5] = 1;
+			break;
+		case 'Z':	// ZP / DP
+			base[4] = xstrtoul(optarg);
+			baseset[4] = 1;
+			break;
+		case '8':
+			base[8] = xstrtoul(optarg);
+			baseset[8] = 1;
+			break;
+    */
+    exit(1);
+}
+/*
  *	Process the arguments, open the files and run the entire show
  */
 int main(int argc, char *argv[])
@@ -1319,7 +1399,7 @@ int main(int argc, char *argv[])
 
 	arg0 = argv[0];
 
-	while ((opt = getopt(argc, argv, "rbvtsiu:o:m:f:R:A:B:C:D:S:X:Z:8:")) != -1) {
+	while ((opt = getopt(argc, argv, "Vh?rbvtsiu:o:m:f:R:A:B:C:D:S:X:Z:8:")) != -1) {
 		switch (opt) {
 		case 'r':
 			ldmode = LD_RFLAG;
@@ -1331,6 +1411,7 @@ int main(int argc, char *argv[])
 		case 'v':
 			printf("FuzixLD 0.2.1\n");
 			break;
+		case 'V':
 		case 't':
 			verbose = 1;
 			break;
@@ -1392,8 +1473,11 @@ int main(int argc, char *argv[])
 			base[8] = xstrtoul(optarg);
 			baseset[8] = 1;
 			break;
+		case 'h':
+		case '?':
 		default:
 			fprintf(stderr, "%s: name ...\n", argv[0]);
+                        usage();
 			exit(1);
 		}
 	}
