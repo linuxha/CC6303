@@ -10,7 +10,7 @@ Still need to
 Have a libc variable __no_argv = 0 in its own object module, so the user can add
 their own __no_argv linked first. Ditto for stdin/stdout (both word 0)
 
-Actuall for __noargv we can have a module that is
+Actually for __noargv we can have a module that is
 
 __no_argv: .byte 0
 then the parser subroutine and call it in crt0 as __no_argv+1 so it's not
