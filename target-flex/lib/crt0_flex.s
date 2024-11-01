@@ -16,12 +16,14 @@ nofit:
 		jsr     $AD1E
 		jmp     $AD03
 l1:
+        	ldaa    #$7E    	;* JMP = $7E
+                staa    @jmptmp         ;*
 		;
 		;	See if we look like we fit. Allow 512 byts for args
 		;	and stack minimum
 		;
 		;*
-		;* __bss     = $0292
+		;* __bss     = $0292 (this changes depending on the C code)
 		;*__bss_size = $0000
 		;*
 		ldab    #<__bss 	;* $92
@@ -31,16 +33,29 @@ l1:
 		staa    @tmp
 		stab    @tmp+1
 	
-		ldaa    $AC2B   	;* Was AC2B = $7F
 		ldab    $AC2C           ;* Was AC2C = $FF
-		subb    @tmp+1          ;* $7C
-		sbca    @tmp            ;* $ED
-		bcs     nofit
-		; Allow some stack space (~0x200 bytes)
-		deca            	;* $7B
-		bcs     nofit
-		deca            	;* $7A
-		bcs     nofit
+		ldaa    $AC2B   	;* Was AC2B = $7F
+		subb    @tmp+1          ;* $
+		sbca    @tmp            ;* 7FFF 03B0
+		;***
+		;*** Bad math, need to fix this
+		;***
+		;bcs     nofit
+        nop
+        nop
+		;***
+		;*** DECA doesn't affect the Carry
+		;***
+		;deca            	;*
+		;bcs     nofit           ;*
+		;deca            	;*
+		;bcs     nofit
+	nop
+	nop
+	nop
+	nop
+	nop
+l2:     nop
 
 		;*
 		;*
@@ -94,7 +109,7 @@ wiped:
 		; Assign argv[0] to a constant string
 
 		ldaa    #>arg0
-		ldaa    #<arg0
+		ldab    #<arg0
 		bsr     storearg 	;* STK = $7EFD ([SP] ← [SP] - 2) = $7EFB
 		;
 		; Start processing the next argument
@@ -177,21 +192,22 @@ done:
 		ldab    @tmp+1          ;
 		pshb                    ; $7EF9 = B, STK = $7EF8
 		psha                    ; $7EFB = A, STK = $7EF7
-		;jsr     _main          ; 
-		jsr     kludge          ; 
+		;sr     _main           ; 
+		;jsr     kludge          ; 
 		; if this returns it's an exit()
 		; Never returns
-		jmp     $AD03
+		;
 
 kludge: 	nop
 		jsr     _main
 		nop
 		nop
+	        jmp     $AD03   	;* Warmst
 		rts
 
 		.data
 
-nomem:		.ascii  'NOT ENOUGH RAM'
+nomem:		.ascii  'Not enough RAM'
 		.byte   4
 arg0:
 		.ascii  'cmd'
