@@ -11,6 +11,22 @@
  *	it into the tool chain.
  *
  *	See the FLEX Advanced Programmer's Guide.
+ *
+ *      A binary record looks as follows: (byte numbers are relative to the start
+ *      of the record, not the beginning of a sector):
+ *
+ *      | Byte | Description                                | Notes |
+ *      |    0 | Start of a record indicator ($02, STX)     |       |
+ *      |    1 | Most significant byte of the load address  |       |
+ *      |    2 | Least significant byte of the load address |       |
+ *      |    3 | number of data bytes in the record         |       |
+ *      |  4-n | The binary data of the record              |       |
+ *
+ *      The load address portion of a binary record contains the address where
+ *      the data resided when it was written to the file with the FLEX SAVE
+ *      command. When the file is loaded for execution or use, it will be put in
+ *      the same memory areas from which it was SAVED.
+ *
  */
 
 void usage(void) {
