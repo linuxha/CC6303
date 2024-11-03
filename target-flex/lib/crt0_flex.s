@@ -4,19 +4,46 @@
 ;
 ;	Turn this into a C style argc/argv.
 ;
+        .export __exit
+;
+CBUFPT  equ     $AC14
+MEMEND  equ     $AC2B
+WARMS   equ     $AD03
+INCH    equ     $AD09
+INCH2   equ     $AD0C
+OUTCH   equ     $AD0F
+OUTCH2  equ     $AD12
+GETCHR  equ     $AD15
+PUTCHR  equ     $AD18
+INBUFF  equ     $AD1B
+PSTRNG  equ     $AD1E
+CLASS   equ     $AD21
+PCRLF   equ     $AD24
+NXTCH   equ     $AD27
+RSTRIO  equ     $AD2A
+OUTDEC  equ     $AD39
+OUTHEX  equ     $AD3C
+GETHEX  equ     $AD42
+OUTADR  equ     $AD45
+INDEC   equ     $AD48
+STATUS  equ     $AD4E
+
+JMP	equ     $7E
 ;
 start:		
-		bra     l1
-		.byte   1
+		bra     crt0
+VN:
+                .byte   1
 		;
 		; Out of memory
 		;
+		nop                     ;* Dummy byte I can drop an illegal instruction into
 nofit:
 		ldx     #nomem
-		jsr     $AD1E
-		jmp     $AD03
-l1:
-        	ldaa    #$7E    	;* JMP = $7E
+		jsr     PSTRNG          ;* $AD1E
+		jmp     WARMS           ;* $AD03
+crt0:
+        	ldaa    #JMP    	;* JMP = $7E
                 staa    @jmptmp         ;*
 		;
 		;	See if we look like we fit. Allow 512 byts for args
@@ -40,24 +67,16 @@ l1:
 		;***
 		;*** Bad math, need to fix this
 		;***
-		;bcs     nofit
-        nop
-        nop
+		bcs     nofit
 		;***
-		;*** DECA doesn't affect the Carry
+		;*** @FIXME: DECA doesn't affect the Carry
 		;***
-		;deca            	;*
-		;bcs     nofit           ;*
-		;deca            	;*
-		;bcs     nofit
-	nop
-	nop
-	nop
-	nop
-	nop
-l2:     nop
+		deca            	;*
+		bcs     nofit           ;*
+		deca            	;*
+		bcs     nofit
 
-		;*
+l2:		;*
 		;*
 		;*
 		ldx     #__bss  	;* $0292 (PRGEND)
@@ -106,6 +125,7 @@ wiped:
 		; tmp2 is our argv pointers
 		; and stack sits just below that
 		
+	bra     skip
 		; Assign argv[0] to a constant string
 
 		ldaa    #>arg0
@@ -185,6 +205,7 @@ done:
 		dec     @tmp1		; argc is the NULL marker arg
 		sts     @tmp		; S is balanced so is argv[0] ptr
 		ldab    @tmp1		; argc
+skip:   
 		clra                    ;
 		pshb                    ; $7EFB = B, STK = $7EFA
 		psha                    ; $7EFA = A, STK = $7EF9
@@ -197,7 +218,7 @@ done:
 		; if this returns it's an exit()
 		; Never returns
 		;
-
+__exit: 
 kludge: 	nop
 		jsr     _main
 		nop
@@ -211,6 +232,7 @@ nomem:		.ascii  'Not enough RAM'
 		.byte   4
 arg0:
 		.ascii  'cmd'
+		.byte   4
 		.byte   0
 ;*
 ;* psha - [[SP]] ← [A], [SP] ← [SP] - 1
