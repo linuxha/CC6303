@@ -13,6 +13,10 @@ and generate code then change its mind.
 
 # Notes
 
+## Notes: 20241103
+
+I found the troublemaker stack stomping code in the crt0_flex library. It was the argv maker. I'll work to get that fixed. I also found we don't have a printf library, that's next. Found lots of typos, fixed them. Also discovered that the compiler still occasionally I can manually work around that for now. adds 6801/03 code when compiling with the 6800 option. I'll work through that later. I'm now starting to attempt to compile code that is working on the 6809 version of flex. That's actually helping me find all the missing code and bugs. I will need to rework the frontend part of the compiler, that limits what I can do with the frontend. I can still use each inividual compiler command but I'd like a easy way to compile all the parts and then into the command. My hope is to actually be able to compile the ved code (an  editor, like vi) and run it on the 6800 Flex.
+
 ## Notes: 20241012
 
 I've modified things a bit to allow me to compile a 6800 Flex C program and allow it to run under Flex. I have found a few problems like a double des after a jsr to main. I found it necessary to add a jump to WARMST (flex_fini()) at the end of my main() {}. Once I get the sample program cleaned up I'll provide a sample that should compile on Linux and run on Flex (6800).
