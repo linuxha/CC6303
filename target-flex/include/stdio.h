@@ -1,6 +1,8 @@
 #ifndef _STDIO_H
 #define _STDIO_H
 
+#include <stdint.h>
+
 struct __file {
     uint8_t con;
     uint8_t reserved;
