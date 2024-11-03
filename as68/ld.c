@@ -327,7 +327,7 @@ struct symbol *new_symbol(const char *name, int hash)
 	s->next = symhash[hash];
 	symhash[hash] = s;
 	if (verbose)
-		printf("+%.*s\n", NAMELEN, name);
+            fprintf(stderr, "+%.*s\n", NAMELEN, name);
 	return s;
 }
 
@@ -640,7 +640,7 @@ restart:
 		if (lib) {
 			if (!(type & S_UNKNOWN) && is_undefined(name)) {
 				if (verbose)
-					printf("importing for '%s'\n", name);
+                                    fprintf(stderr, "importing for '%s'\n", name);
 				lib = 0;
 				goto restart;
 			}
@@ -725,11 +725,11 @@ static void set_segment_bases(void)
 	for (o = objects; o != NULL; o = o->next) {
 		openobject(o);
 		if (verbose)
-			printf("%s:\n", o->path);
+                    fprintf(stderr, "%s:\n", o->path);
 		for (i = 1; i < OSEG; i++) {
 			size[i] += o->oh->o_size[i];
 			if (verbose)
-				printf("\t%c : %04X  %04X\n",
+                            fprintf(stderr, "\t%c : %04X  %04X\n",
 					"ACDBZXSLsb??????"[i], o->oh->o_size[i],
 						size[i]);
 			if (size[i] < o->oh->o_size[i])
@@ -741,7 +741,7 @@ static void set_segment_bases(void)
 
 	if (verbose) {
 		for (i = 1; i < 7; i++)
-			printf("Segment %c Size %04X\n", "ACDBZXc"[i], size[i]);
+                    fprintf(stderr, "Segment %c Size %04X\n", "ACDBZXc"[i], size[i]);
 	}
 	/* We now know where to put the binary */
 	if (ldmode == LD_RELOC) {
@@ -762,24 +762,24 @@ static void set_segment_bases(void)
 		/* Whoopee it fits */
 		/* Insert the linker symbols */
 		/* FIXME: symbols for all OSEG segments */
-		insert_internal_symbol("__code", CODE, 0);
-		insert_internal_symbol("__data", DATA, 0);
-		insert_internal_symbol("__bss", BSS, 0);
-		insert_internal_symbol("__literal", LITERAL, 0);
-		insert_internal_symbol("__end", BSS, size[3]);
-		insert_internal_symbol("__zp", ZP, 0);
-		insert_internal_symbol("__discard", DISCARD, 0);
-		insert_internal_symbol("__common", COMMON, 0);
-		insert_internal_symbol("__buffers", BUFFERS, 0);
-		insert_internal_symbol("__commondata", COMMONDATA, 0);
-		insert_internal_symbol("__code_size", ABSOLUTE, size[CODE]);
-		insert_internal_symbol("__data_size", ABSOLUTE, size[DATA]);
-		insert_internal_symbol("__bss_size", ABSOLUTE, size[BSS]);
-		insert_internal_symbol("__literal_size", ABSOLUTE, size[LITERAL]);
-		insert_internal_symbol("__zp_size", ABSOLUTE, size[ZP]);
-		insert_internal_symbol("__discard_size", ABSOLUTE, size[DISCARD]);
-		insert_internal_symbol("__common_size", ABSOLUTE, size[COMMON]);
-		insert_internal_symbol("__buffers_size", ABSOLUTE, size[BUFFERS]);
+		insert_internal_symbol("__code",            CODE, 0);
+		insert_internal_symbol("__data",            DATA, 0);
+		insert_internal_symbol("__bss",             BSS, 0);
+		insert_internal_symbol("__literal",         LITERAL, 0);
+		insert_internal_symbol("__end",             BSS, size[3]);
+		insert_internal_symbol("__zp",              ZP, 0);
+		insert_internal_symbol("__discard",         DISCARD, 0);
+		insert_internal_symbol("__common",          COMMON, 0);
+		insert_internal_symbol("__buffers",         BUFFERS, 0);
+		insert_internal_symbol("__commondata",      COMMONDATA, 0);
+		insert_internal_symbol("__code_size",       ABSOLUTE, size[CODE]);
+		insert_internal_symbol("__data_size",       ABSOLUTE, size[DATA]);
+		insert_internal_symbol("__bss_size",        ABSOLUTE, size[BSS]);
+		insert_internal_symbol("__literal_size",    ABSOLUTE, size[LITERAL]);
+		insert_internal_symbol("__zp_size",         ABSOLUTE, size[ZP]);
+		insert_internal_symbol("__discard_size",    ABSOLUTE, size[DISCARD]);
+		insert_internal_symbol("__common_size",     ABSOLUTE, size[COMMON]);
+		insert_internal_symbol("__buffers_size",    ABSOLUTE, size[BUFFERS]);
 		insert_internal_symbol("__commondata_size", ABSOLUTE, size[COMMONDATA]);
 	}
 	/* Now set the base of each object appropriately */
@@ -1124,10 +1124,10 @@ static void write_stream(FILE * op, int seg)
 	while (o != NULL) {
 		openobject(o);	/* So we can hide library gloop */
 		if (verbose)
-			printf("Writing %s#%ld:%d\n", o->path, o->off, seg);
+                    fprintf(stderr, "Writing %s#%ld:%d\n", o->path, o->off, seg);
 		io_lseek(o->off + o->oh->o_segbase[seg]);
 		if (verbose)
-			printf("%s:Segment %d file seek base %d\n",
+                    fprintf(stderr, "%s:Segment %d file seek base %d\n",
 				o->path,
 				seg, o->oh->o_segbase[seg]);
 		dot = o->base[seg];
@@ -1139,7 +1139,7 @@ static void write_stream(FILE * op, int seg)
 		   be in the binary space */
 		else if (ldmode == LD_ABSOLUTE) {
 			if (verbose)
-				printf("Writing seg %d from %x\n", seg, dot);
+                            fprintf(stderr, "Writing seg %d from 0x%x\n", seg, dot);
 			/* TODO: assumes 16bit */
 			if (!is_code(seg) && split_id)
 				xfseek(op, dot + 0x10000);
@@ -1183,7 +1183,7 @@ static void write_binary(FILE * op, FILE *mp)
 	rewind(op);
 
 	if (verbose)
-		printf("Writing binary\n");
+            fprintf(stderr, "Writing binary\n");
 	if (!rawstream)
 		fwrite(&hdr, sizeof(hdr), 1, op);
 	/* For LD_RFLAG number the symbols for output, for othe forms
@@ -1289,12 +1289,12 @@ static void add_object(const char *name, off_t off, int lib)
 			   to do faster */
 			do {
 				if (verbose)
-					printf(":: Library scan %s\n", name);
+                                    fprintf(stderr, ":: Library scan %s\n", name);
 				progress = 0;
 				io_lseek(SARMAG);
 				process_library(name);
 				if (verbose)
-					printf(":: Pass resovled %d symbols\n", progress);
+                                    fprintf(stderr, ":: Pass resovled %d symbols\n", progress);
 			/* FIXME: if we counted unresolved symbols we might
 			   be able to exit earlier ? */
 			/* Don't rescan libs */
@@ -1324,6 +1324,7 @@ usage() {
 		case 'v':
 			printf("FuzixLD 0.2.1\n");
 			break;
+		case 'V':
 		case 't':
 			verbose = 1;
 			break;
@@ -1507,21 +1508,21 @@ int main(int argc, char *argv[])
 		rawstream = 1;
 	while (optind < argc) {
 		if (verbose)
-			printf("Loading %s\n", argv[optind]);
+                    fprintf(stderr, "Loading %s\n", argv[optind]);
 		add_object(argv[optind], 0, 0);
 		optind++;
 	}
 	if (verbose)
-		printf("Computing memory map.\n");
+            fprintf(stderr, "Computing memory map.\n");
 	set_segment_bases();
 	if (verbose)
-		printf("Writing output.\n");
+            fprintf(stderr, "Writing output.\n");
 
 	bp = xfopen(outname, "w");
 	if (mapname) {
 		mp = xfopen(mapname, "w");
 		if (verbose)
-			printf("Writing map file.\n");
+                    fprintf(stderr, "Writing map file.\n");
 		write_map_file(mp);
 		fclose(mp);
 	}
