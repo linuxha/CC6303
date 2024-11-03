@@ -167,4 +167,6 @@ _flex_stat:
 nothit:		rts
 
 _flex_fini:
+                ins             ; Fix the stack, remove the return addr
+                ins             ; Fix the stack
         	jmp     $AD03
