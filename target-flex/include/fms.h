@@ -1,6 +1,8 @@
 #ifndef _FLEX_FMS_H
 #define _FLEX_FMS_H
 
+#include <stdint.h>
+
 struct fms_fcb {
     uint8_t function;
     uint8_t error;
@@ -13,27 +15,27 @@ struct fms_fcb {
 #define FMS_ATTR_DP		0x40
 #define FMS_ATTR_RP		0x20
 #define FMS_ATTR_CP		0x10
-    uint8_t reserved0;
-    uint8_t starttrack;		/* Basically head, tail of the block list */
-    uint8_t startsec;
-    uint8_t endtrack;
-    uint8_t endsec;
+    uint8_t  reserved0;
+    uint8_t  starttrack;        /* Basically head, tail of the block list */
+    uint8_t  startsec;
+    uint8_t  endtrack;
+    uint8_t  endsec;
     uint16_t size;		/* In sectors */
-    uint8_t fsmap;		/* Not used on 6800 - only in 6809 Flex */
-    uint8_t reserved1;
-    uint8_t month;
-    uint8_t day;
-    uint8_t year;
+    uint8_t  fsmap;		/* Not used on 6800 - only in 6809 Flex */
+    uint8_t  reserved1;
+    uint8_t  month;
+    uint8_t  day;
+    uint8_t  year;
     uint16_t next;		/* Next FCB in chain */
     uint16_t pos;		/* Current track, sector */
     uint16_t record;		/* Current logical record number */
-    uint8_t dataindex;		/* Data index into record */
-    uint8_t randindex;		/* Random index */
-    uint8_t workbuf[11];
+    uint8_t  dataindex;		/* Data index into record */
+    uint8_t  randindex;		/* Random index */
+    uint8_t  workbuf[11];
     uint16_t diraddr;
-    uint16_ firstdel;
-    uint8_t scratch[11];
-    uint8_t sector[256];
+    uint16_t firstdel;
+    uint8_t  scratch[11];
+    uint8_t  sector[256];
 };
 
 #define FMS_READBYTE	0x00	/* read/write according to mode */
@@ -65,7 +67,7 @@ struct fms_fcb {
 #define FMS_ERR_ILFUNC	0x01
 #define FMS_ERR_INUSE	0x02
 #define FMS_ERR_EXISTS	0x03
-#defien FMS_ERR_NOENT	0x04
+#define FMS_ERR_NOENT	0x04
 #define FMS_ERR_SYSDE	0x05
 #define FMS_ERR_DIRFUL	0x06
 #define FMS_ERR_DSKFUL	0x07
@@ -91,15 +93,18 @@ struct fms_fcb {
 #define FMS_ERR_SPOOL	0x1B
 #define FMS_ERR_HW	0x1C
 
-extern void fms_close(void);
-extern uin16_t fms_call(uint8_t a, uint8_t b, struct fms_fcb *fcb);
-extern int fms_getverify(void);
-extern void fms_setverify(int);
-extern int fms_error;
+extern struct fms_fcb;
+
+extern void     fms_close(void);
+extern uint16_t fms_call(uint8_t a, uint8_t b, struct fms_fcb *fcb);
+extern int      fms_getverify(void);
+extern void     fms_setverify(int);
+extern int      fms_error;
 
 extern int flex_getfspec(struct fms_fcb *fcb);
 extern int flex_load(void);
 extern int flex_setext(struct fms_fcb *fcb, uint8_t extension);
+
 #define FLEX_EXT_BIN	0
 #define FLEX_EXT_TXT	1
 #define FLEX_EXT_CMD	2
